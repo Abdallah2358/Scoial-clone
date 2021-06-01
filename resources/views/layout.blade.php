@@ -8,6 +8,8 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+
     <!-- Custom styles for this template -->
     <link href="/css/cover.css" rel="stylesheet">
 
@@ -19,9 +21,10 @@
             <div>
                 <h3 class="float-md-start mb-0">Cover</h3>
                 <nav class="nav nav-masthead justify-content-center float-md-end">
-                    <a class="nav-link {{ Request::path() === '/' ? 'active' : '' }}" aria-current="page" href="/">Home</a>
+                    <a class="nav-link {{ Request::path() === '/' ? 'active' : '' }}" aria-current="page"
+                        href="/">Home</a>
                     @yield('navlink')
-                   
+
                 </nav>
             </div>
         </header>
@@ -32,6 +35,8 @@
                     href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>
         </footer>
     </div>
+    <script src="/jquery-3.5.1.slim.min.js"></script>
+    <script src="/bootstrap.bundle.js"></script>
 </body>
 
 </html>

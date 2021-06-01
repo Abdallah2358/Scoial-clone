@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Users;
+use DB;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
+    protected $user;
+    public function setUser(Type $user = null)
+    {
+        $this->user = $user;
+    }
+    public function getUser()
+    {
+        return $this->user;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,8 +24,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-       
-        return view('login');
+
     }
 
     /**
@@ -25,7 +34,7 @@ class UsersController extends Controller
      */
     public function create()
     {
-        return view('register');
+        return view('register', ['genders' => DB::select('call allGenders()')]);
     }
 
     /**
@@ -37,7 +46,53 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         //
-        \dd($request->all());
+        $username = $request['userName'];
+
+        foreach (DB::select('call Allusers()') as $user) {
+            if ($username === $user->username) {
+
+                return \view('register', ['userExist' => 'yes'], ['genders' => DB::select('call allGenders()')]);
+            }
+        }
+        $firstName = $request['firstName'];
+        $email = $request['email'];
+        $password = $request['password'];
+        $lastName = $request['lastName'];
+        $gender = $request['gender'];
+        $address = $request['address'];
+        $bio = $request['bio'];
+        $date = $request['year'] . '-' . $request['month'] . '-' . $request['day'];
+
+        if ($username && $email && $firstName && $password) {
+            $user = new Users();
+            $user->username = $username;
+            $user->first_name = $firstName;
+            $user->email = $email;
+            $user->password = $password;
+            if ($lastName) {
+                $user->last_name = $lastName;
+            }
+
+            if ($gender) {
+                $user->gender_id = $gender;
+            }
+            if ($address) {
+                $user->address = $address;
+            }
+
+            if ($bio) {
+                $user->bio = $bio;
+            }
+
+            if ($request['year'] && $request['month'] && $request['day']) {
+                $user->birth_date = $date;
+            }
+
+            $user->save();
+            return \view('landing', ['register' => 'success']);
+        } else {
+            return \view('register', ['register' => 'failed'], ['genders' => DB::select('call allGenders()')]);
+        }
     }
 
     /**
@@ -46,9 +101,19 @@ class UsersController extends Controller
      * @param  \App\Users  $users
      * @return \Illuminate\Http\Response
      */
-    public function show(Users $users)
+    public function show(Users $users, Request $request)
     {
-        //
+        //serach result arry
+        $usersFromSerach = DB::select("call finduser('" . $request['search'] . "')");
+    
+        $reuslts = [];
+        foreach ($usersFromSerach as $searchUser) {
+            $messages= DB::select("call findChats('".$request['user']."','". $searchUser->id."')");
+            array_push($reuslts, (object) array("user" => $searchUser, "messages" => $messages));
+        }
+    
+        return view('userSearch', ['results' => $reuslts, 'user' => $request['user'], 'userNo' => 0]);
+
     }
 
     /**

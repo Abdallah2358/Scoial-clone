@@ -4,6 +4,11 @@
      <a class="nav-link" aria-current="page" href="/register">Register</a>
  @endSection
  @section('content')
+     @if ($register ?? '')
+         <script>
+             alert("Sucsseful Registeration")
+         </script>
+     @endif
      <main class="px-3">
          <h1>
              Abdallah Mohamed Ahemd El Hadidi
@@ -12,10 +17,10 @@
 
          <h2>Database-II</h2>
          <p>
-             section : 3 
+             section : 3
          </p>
          <p>
-            StudentID : 1000104040
+             StudentID : 1000104040
          </p>
 
      </main>
