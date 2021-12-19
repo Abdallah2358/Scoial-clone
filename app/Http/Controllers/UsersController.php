@@ -105,14 +105,39 @@ class UsersController extends Controller
     {
         //serach result arry
         $usersFromSerach = DB::select("call finduser('" . $request['search'] . "')");
-    
+
         $reuslts = [];
         foreach ($usersFromSerach as $searchUser) {
-            $messages= DB::select("call findChats('".$request['user']."','". $searchUser->id."')");
-            array_push($reuslts, (object) array("user" => $searchUser, "messages" => $messages));
+            $messages = DB::select("call findChats('" . $request['user'] . "','" . $searchUser->id . "')");
+            array_push($reuslts, (object) array("user" => $searchUser, "messages" => $messages, "count" => count(DB::select("call findChats_unlimited('".$searchUser->id."','".$request['user']. "')"))));
         }
-    
+
         return view('userSearch', ['results' => $reuslts, 'user' => $request['user'], 'userNo' => 0]);
+
+    }
+    public function friends($id)
+    {
+        $set_of_friends = new \Ds\Set();
+        $friends_chat_array = [];
+        $who_i_chated_with = DB::select("call who_i_chated_with('$id')");
+        $who_chated_with_me = DB::select("call who_chated_with_me('$id')");
+        //get who_i_chated_with
+        foreach ($who_i_chated_with as $friend) {
+            $set_of_friends->add($friend->to_user_id);
+        }
+        //get who_chated_with_me
+        foreach ($who_chated_with_me as $friend) {
+            $set_of_friends->add($friend->from_user_id);
+        }
+        //count all chats
+        $reuslts = [];
+        foreach ($set_of_friends as $friend) {
+            $messages = DB::select("call findChats('$friend','$id')");
+            array_push($reuslts, (object) array("user" => DB::select("call userById('$friend')")[0], "messages" => $messages
+                , "count" => count(DB::select("call findChats_unlimited('$friend','$id')")),
+            ));
+        }
+        return view('userSearch', ['results' => $reuslts, 'user' => $id, 'userNo' => 0]);
 
     }
 
