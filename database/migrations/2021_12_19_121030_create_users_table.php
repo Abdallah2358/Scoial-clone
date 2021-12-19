@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('email',100);
             $table->string('password',125);
             $table->date('birth_date');
+            $table->bigInteger('gender_id')->unsigned();;
             $table->foreign('gender_id')->references('id')->on('genders');
             $table->text('adress');
             $table->text('bio');
