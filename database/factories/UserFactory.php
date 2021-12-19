@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(Users::class, function (Faker $faker) {
     $gender_id = $faker->numberBetween(1, 2);
 
     return [
